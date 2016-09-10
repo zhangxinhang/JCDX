@@ -14,8 +14,9 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
       <button class="btn btn-success" ng-click="datac.export(datac.agency)">导出</button>
+      <button ng-if="isBatch" type="button" class="btn btn-info" ng-click="datac.batchExport(agencys)">批量导出</button>
     </div>
   </div>
 </div>
