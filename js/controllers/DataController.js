@@ -9,8 +9,12 @@ function DataController($scope, XlsxService, $rootScope, $route) {
 
   $scope.isBatch = $route.current.params.batch;
 
+  this.refresh = function() {
+    getAgencys();
+  }
 
   function getAgencys() {
+    console.log('----------XlsxService.tempXlsData-------', XlsxService.tempXlsData)
     var data = _.groupBy(XlsxService.tempXlsData, function(data) {
       return data.agencyName;
     });
