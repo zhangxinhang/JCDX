@@ -1,7 +1,9 @@
 angular.module('app').factory('XlsxService', XlsxService);
 //@ngInject
-function XlsxService() {
+function XlsxService($rootScope) {
   var retObj = {};
+
+  retObj.tempXlsData = null;
 
   retObj.writeXlsx = function(data, filename, defineSheetNames) {
     function datenum(v, date1904) {
@@ -96,6 +98,89 @@ function XlsxService() {
     saveAs(new Blob([s2ab(wbout)], {
       type: "application/octet-stream"
     }), filename);
+  }
+
+  retObj.readXlsOrXlsx = function(file, fields) {
+    function fixdata(data) {
+      var o = "",
+        l = 0,
+        w = 10240;
+      for (; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+      o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+      return o;
+    }
+
+    function to_json_xls(workbook) {
+      var result = [];
+      var i = 0;
+      workbook.SheetNames.forEach(function(sheetName) {
+        //console.log(sheetName);
+        var roa = XLS.utils.sheet_to_row_object_array(workbook.Sheets[sheetName], {
+          header: fields
+        });
+        if (roa.length > 0) {
+          result.push(roa);
+        }
+      });
+      return result;
+    }
+
+    function process_wb_xls(wb) {
+      retObj.tempXlsData = to_json_xls(wb)[0];
+      $rootScope.isXlsxLoading = false;
+      $rootScope.$apply('isXlsxLoading');
+      console.log(retObj.tempXlsData);
+    }
+
+    function to_json_xlsx(workbook) {
+      var result = [];
+      var i = 0;
+      workbook.SheetNames.forEach(function(sheetName) {
+        //console.log(sheetName);
+        var roa = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName], {
+          header: fields
+        });
+        if (roa.length > 0) {
+          result.push(roa);
+        }
+      });
+      return result;
+    }
+
+    function process_wb_xlsx(wb) {
+      retObj.tempXlsData = to_json_xlsx(wb)[0];
+      $rootScope.isXlsxLoading = false;
+      $rootScope.$apply('isXlsxLoading');
+      console.log(retObj.tempXlsData);
+    }
+
+    function handleFile(file) {
+      var f = file;
+      var reader = new FileReader();
+      var filenameSplit = f.name.split('.');
+      if (filenameSplit[filenameSplit.length - 1].toLowerCase() === 'xls') {
+        reader.onload = function(e) {
+          var data = e.target.result;
+          var arr = fixdata(data);
+          var wb = XLS.read(btoa(arr), {
+            type: 'base64'
+          });
+          process_wb_xls(wb);
+        };
+        reader.readAsArrayBuffer(f);
+      } else if (filenameSplit[filenameSplit.length - 1].toLowerCase() === 'xlsx') {
+        reader.onload = function(e) {
+          var data = e.target.result;
+          var arr = fixdata(data);
+          var wb = XLSX.read(btoa(arr), {
+            type: 'base64'
+          });
+          process_wb_xlsx(wb);
+        };
+        reader.readAsArrayBuffer(f);
+      }
+    }
+    handleFile(file);
   }
   return retObj;
 }

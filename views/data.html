@@ -1,0 +1,21 @@
+<div ng-controller="DataController as datac" class="home">
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <h2>C网佣金数据处理微系统</h2></div>
+  </div>
+  <div class="row">
+    <div class="col-md-2 col-md-offset-4">
+      <div ui-select ng-model="datac.agency" theme="bootstrap">
+        <div ui-select-match placeholder="请选择机构">
+          <span ng-bind="$select.selected"></span>
+        </div>
+        <div ui-select-choices repeat="agency in (agencys | filter: $select.search) track by agency">
+          <span ng-bind="agency"></span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-success" ng-click="datac.export(datac.agency)">导出</button>
+    </div>
+  </div>
+</div>

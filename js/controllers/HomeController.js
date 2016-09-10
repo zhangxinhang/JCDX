@@ -1,17 +1,26 @@
 angular.module('app').controller('HomeController', HomeController);
 //@ngInject
-function HomeController($scope, XlsxService) {
+function HomeController($scope, XlsxService, $rootScope, $location) {
   // body...
-  var data = [
-    [
-      [1, 2, 3],
-      [4, 5, 6]
-    ],
-    [
-      [7, 2, 3],
-      [4, 5, 6]
-    ]
-  ];
+  // 
+  var thisc = this;
+  //XlsxService.writeXlsx(data, 'heddllo.xls', ['hello1', 'khelosd']);
 
-  XlsxService.writeXlsx(data, 'heddllo.xls', ['hello1', 'khelosd']);
+  this.selectFile = function(file) {
+    console.log(arguments);
+    $scope.isLoading = true;
+    if (!file) {
+      return;
+    }
+    XlsxService.readXlsOrXlsx(file, ['queryDate', 'phone', 'agencyCode',
+      'agencyName', 'policyName', 'remunerationType',
+      'reason', 'amount', 'firstDate', 'policyShortName'
+    ]);
+    $location.path('/data');
+
+  }
+
+
+
+
 }

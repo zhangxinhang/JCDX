@@ -1,4 +1,4 @@
-angular.module('app', ['ngRoute']).config(config);
+angular.module('app', ['ngRoute', 'ui.select', 'ngSanitize', 'ngFileUpload']).config(config);
 
 /**
  * @ngInject
@@ -6,5 +6,7 @@ angular.module('app', ['ngRoute']).config(config);
 function config($routeProvider) {
   $routeProvider.when('/', {
     templateUrl: 'views/home.html'
+  }).when('/data', {
+    templateUrl: 'views/data.html'
   });
 }
